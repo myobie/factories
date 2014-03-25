@@ -1,3 +1,5 @@
+require "active_support/core_ext/string/inflections"
+
 module Factories
   class BaseFactory
     def self.create(opts = {})
@@ -9,7 +11,7 @@ module Factories
     end
 
     def self.model_class
-      name.gsub(/Factory/, '').demodulize.constantize
+      name.gsub(/Factory$/, '').demodulize.constantize
     end
 
     def model_class
