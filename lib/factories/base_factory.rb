@@ -1,4 +1,4 @@
-require "active_support/core_ext/string/inflections"
+require "inflecto"
 
 module Factories
   class BaseFactory
@@ -11,7 +11,7 @@ module Factories
     end
 
     def self.model_class
-      name.gsub(/Factory$/, '').demodulize.constantize
+      Inflecto.constantize(Inflecto.demodulize(name.gsub(/Factory$/, '')))
     end
 
     def model_class

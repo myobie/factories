@@ -1,4 +1,4 @@
-require "active_support/core_ext/string/inflections"
+require "inflecto"
 
 module Factories
   module_function
@@ -13,9 +13,9 @@ module Factories
 
   def class_from_name(name)
     class_name = "#{name}_factory"
-    class_name = class_name.classify
+    class_name = Inflecto.classify class_name
     class_name = "Factories::#{class_name}"
-    class_name.constantize
+    Inflecto.constantize class_name
   end
 end
 
