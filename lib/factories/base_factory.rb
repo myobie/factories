@@ -28,7 +28,7 @@ module Factories
     end
 
     def create
-      build.tap { |instance| instance.save || raise("Factory model did not save") }
+      build.tap { |instance| instance.save || raise("Factory model did not save:" + instance.errors.full_messages.join(", ")) }
     end
 
     def build
