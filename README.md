@@ -24,13 +24,11 @@ class User < ActiveRecord::Base
   validates :name, presence: true
 end
 
-module Factories
-  class UserFactory < BaseFactory
-    def defaults
-      {
-        name: "Nathan"
-      }
-    end
+Factories.gen :user do
+  def defaults
+    {
+      name: "Nathan"
+    }
   end
 end
 
@@ -45,6 +43,20 @@ user3.valid? # => true
 
 user4 = Factories.build(:user, name: nil)
 user4.valid? # => false
+```
+
+If you don't want to use the fancy `#gen` method, the equivilent is:
+
+```ruby
+module Factories
+  class UserFactory < BaseFactory
+    def defaults
+      {
+        name: "Nathan"
+      }
+    end
+  end
+end
 ```
 
 For the best result, `include Factories` into your test/spec scope.

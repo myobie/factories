@@ -1,21 +1,30 @@
 require "inflecto"
 
 module Factories
+  def self.gen(name, &blk)
+    klass = Class.new(BaseFactory, &blk)
+    Factories.const_set(factory_class_name_from_string(name).intern, klass)
+    klass
+  end
+
+  def self.class_from_name(name)
+    factory_name = factory_class_name_from_string(name)
+    class_name = "Factories::#{factory_name}"
+    Inflecto.constantize class_name
+  end
+
+  def self.factory_class_name_from_string(name)
+    Inflecto.classify "#{name}_factory"
+  end
+
   module_function
 
   def create(name, opts = {})
-    class_from_name(name).create(opts)
+    Factories.class_from_name(name).create(opts)
   end
 
   def build(name, opts = {})
-    class_from_name(name).build(opts)
-  end
-
-  def class_from_name(name)
-    class_name = "#{name}_factory"
-    class_name = Inflecto.classify class_name
-    class_name = "Factories::#{class_name}"
-    Inflecto.constantize class_name
+    Factories.class_from_name(name).build(opts)
   end
 end
 
