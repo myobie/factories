@@ -25,11 +25,9 @@ class User < ActiveRecord::Base
 end
 
 Factories.gen :user do
-  def defaults
-    {
-      name: "Nathan"
-    }
-  end
+  defaults {{
+    name: "Nathan"
+  }}
 end
 
 user = Factories.build(:user)
@@ -87,4 +85,63 @@ describe User do
     end
   end
 end
+```
+
+### Procs
+
+To delay execution time and get a hold of the model instance a proc can
+be provided. An example that shows a problem this might solve are
+circular `belong_to`s:
+
+```ruby
+class Account
+  belongs_to :owner, class_name: 'User'
+end
+
+class User
+  belongs_to :account
+end
+```
+
+This can be expressed in factories by delaying the default values with procs:
+
+```ruby
+Factories.gen :user do
+  defaults {{
+    account: ->(m) { Factories.build(:account, owner: m) },
+    name: Faker::Name.name,
+    email: Faker::Internet.email
+  }}
+end
+
+Factories.gen :account do
+  defaults {{
+    owner: ->(m) { Factories.build(:user, account: m) },
+    name: Faker::Company.name
+  }}
+end
+
+Factories.create(:account) # => #<Account id: ...>
+Factories.create(:user) # => #<User id: ...>
+```
+
+This works because when creating an account the `owner` field's default
+is overriden inside the lambda value for the account of the user. The
+same is true when creating a user: the owner for the account is
+overriden inside the lambda value for the account. Yeah.
+
+### Override magic class name
+
+You can provide your own class to create as many factories as you like:
+
+```ruby
+Factorie.gen :owner do
+  model_class User
+
+  defaults {{
+    name: '...'
+  }}
+end
+
+Factories.create(:owner) # => #<User id: ...>
 ```
