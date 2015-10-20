@@ -63,7 +63,7 @@ module Factories
         h[k] = v
       end
     end
-  
+
     def raise_create_failure
       error_message = if instance.respond_to?(:errors)
         if instance.errors.respond_to?(:full_messages)
