@@ -39,19 +39,6 @@ module Factories
       build.tap { |instance| instance.save || raise_create_failure }
     end
 
-    def raise_create_failure
-      error_message = if instance.respond_to?(:errors)
-        if instance.errors.respond_to?(:full_messages)
-          instance.errors.full_messages
-        else
-          instance.errors.to_s
-        end
-      end
-
-      raise "Factory model did not save: (#{error_message})"
-    end
-    private :raise_create_failure
-
     def build
       model_class.new.tap do |instance|
         attrs = expand_procs @attributes, instance
@@ -75,6 +62,18 @@ module Factories
 
         h[k] = v
       end
+    end
+  
+    def raise_create_failure
+      error_message = if instance.respond_to?(:errors)
+        if instance.errors.respond_to?(:full_messages)
+          instance.errors.full_messages
+        else
+          instance.errors.to_s
+        end
+      end
+
+      raise "Factory model did not save: (#{error_message})"
     end
   end
 end
